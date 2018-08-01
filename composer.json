@@ -1,9 +1,6 @@
 {
     "name": "magento/module-customer-sample-data-venia",
     "description": "N/A",
-    "require": {
-        "magento/module-sample-data": "100.2.*"
-    },
     "type": "magento2-module",
     "version": "100.2.0",
     "license": [
