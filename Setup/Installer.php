@@ -20,7 +20,7 @@ class Installer implements Setup\SampleData\InstallerInterface
      * @param \Magento\CustomerSampleData\Model\Customer $customerSetup
      */
     public function __construct(
-        \Magento\CustomerSampleData\Model\Customer $customerSetup
+        \Magento\CustomerSampleDataVenia\Model\Customer $customerSetup
     ) {
         $this->customerSetup = $customerSetup;
     }
