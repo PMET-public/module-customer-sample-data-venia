@@ -29,6 +29,9 @@ class Customer
      */
     protected $customerFactory;
 
+    /** @var \Magento\Customer\Api\CustomerRepositoryInterface  */
+    protected $customerRepository;
+
     /**
      * @var \Magento\Directory\Model\CountryFactory
      */
@@ -80,9 +83,11 @@ class Customer
     private $serializer;
 
     /**
+     * Customer constructor.
      * @param SampleDataContext $sampleDataContext
      * @param \Magento\Directory\Model\CountryFactory $countryFactory
      * @param \Magento\Customer\Api\Data\CustomerInterfaceFactory $customerFactory
+     * @param \Magento\Customer\Api\CustomerRepositoryInterface $customerRepository
      * @param \Magento\Customer\Api\Data\AddressInterfaceFactory $addressFactory
      * @param \Magento\Customer\Api\Data\RegionInterfaceFactory $regionFactory
      * @param \Magento\Customer\Api\AccountManagementInterface $accountManagement
@@ -90,12 +95,12 @@ class Customer
      * @param \Magento\Framework\Api\DataObjectHelper $dataObjectHelper
      * @param \Magento\Framework\App\State $appState
      * @param Json|null $serializer
-     * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
     public function __construct(
         SampleDataContext $sampleDataContext,
         \Magento\Directory\Model\CountryFactory $countryFactory,
         \Magento\Customer\Api\Data\CustomerInterfaceFactory $customerFactory,
+        \Magento\Customer\Api\CustomerRepositoryInterface $customerRepository,
         \Magento\Customer\Api\Data\AddressInterfaceFactory $addressFactory,
         \Magento\Customer\Api\Data\RegionInterfaceFactory $regionFactory,
         \Magento\Customer\Api\AccountManagementInterface $accountManagement,
@@ -108,6 +113,7 @@ class Customer
         $this->csvReader = $sampleDataContext->getCsvReader();
         $this->countryFactory = $countryFactory;
         $this->customerFactory = $customerFactory;
+        $this->customerRepository = $customerRepository;
         $this->addressFactory = $addressFactory;
         $this->regionFactory = $regionFactory;
         $this->accountManagement = $accountManagement;
@@ -181,6 +187,62 @@ class Customer
             }
         }
     }
+
+    public function addAddresses($fixtures)
+    {
+        foreach ($fixtures as $fixture) {
+            $filePath = $this->fixtureManager->getFixture($fixture);
+            $rows = $this->csvReader->getData($filePath);
+            $header = array_shift($rows);
+            foreach ($rows as $row) {
+                $data = [];
+                foreach ($row as $key => $value) {
+                    $data[$header[$key]] = $value;
+                }
+                $row = $data;
+                $customerData['profile'] = $this->convertRowData($row, $this->getDefaultCustomerProfile());
+                $customerData['address'] = $this->convertRowData($row, $this->getDefaultCustomerAddress());
+                $customerData['address']['region_id'] = $this->getRegionId($customerData['address']);
+
+                $address = $customerData['address'];
+                $regionData = [
+                    RegionInterface::REGION_ID => $address['region_id'],
+                    RegionInterface::REGION => !empty($address['region']) ? $address['region'] : null,
+                    RegionInterface::REGION_CODE => !empty($address['region_code']) ? $address['region_code'] : null,
+                ];
+                $region = $this->regionFactory->create();
+                $this->dataObjectHelper->populateWithArray(
+                    $region,
+                    $regionData,
+                    '\Magento\Customer\Api\Data\RegionInterface'
+                );
+
+                $addresses = $this->addressFactory->create();
+                unset($customerData['address']['region']);
+                $this->dataObjectHelper->populateWithArray(
+                    $addresses,
+                    $customerData['address'],
+                    '\Magento\Customer\Api\Data\AddressInterface'
+                );
+                $addresses->setRegion($region)
+                    ->setIsDefaultBilling(false)
+                    ->setIsDefaultShipping(false);
+
+                $customer = $this->customerRepository->get($customerData['profile']['email']);
+                $currentAddress = $customer->getAddresses();
+                $currentAddress[]=$addresses;
+                $customer->setAddresses($currentAddress);
+                //$this->appState->setAreaCode(\Magento\Framework\App\Area::AREA_FRONTEND);
+                $this->appState->emulateAreaCode(
+                    'frontend',
+                    [$this->customerRepository, 'save'],
+                    [$customer]
+                );
+               //$this->customerRepository->save($customer);
+            }
+        }
+    }
+
 
     /**
      * @return array
