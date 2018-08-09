@@ -3,7 +3,7 @@
  * Copyright © Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
-namespace Magento\CustomerSampleDataVenia\Model;
+namespace Magento\CustomerSampleDataVenia\Setup;
 
 use Magento\Customer\Api\Data\RegionInterface;
 use Magento\Framework\Serialize\Serializer\Json;
@@ -12,7 +12,7 @@ use Magento\Framework\Setup\SampleData\Context as SampleDataContext;
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
-class Customer
+class CustomerInstall
 {
     /**
      * @var \Magento\Framework\Setup\SampleData\FixtureManager
