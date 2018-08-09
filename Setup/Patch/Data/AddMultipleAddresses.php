@@ -11,12 +11,13 @@ use Magento\Framework\Setup\Patch\SchemaPatchInterface;
 use Magento\Framework\Setup\Patch\PatchRevertableInterface;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
 use Magento\CustomerSampleDataVenia\Setup\CustomerInstall;
+use Magento\Framework\Setup\Patch\PatchVersionInterface;
 
 /**
  * Patch is mechanism, that allows to do atomic upgrade data changes
  */
 class AddMultipleAddresses implements
-    DataPatchInterface
+    DataPatchInterface, PatchVersionInterface
 {
     /**
      * @var ModuleDataSetupInterface $moduleDataSetup
@@ -63,5 +64,9 @@ class AddMultipleAddresses implements
         return [
             AddCustomers::class,
         ];
+    }
+
+    public static function getVersion(){
+        return '0.0.0';
     }
 }
