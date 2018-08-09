@@ -67,6 +67,6 @@ class AddMultipleAddresses implements
     }
 
     public static function getVersion(){
-        return '0.0.0';
+        return '0.0.1';
     }
 }
