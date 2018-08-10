@@ -7,8 +7,6 @@
 namespace Magento\CustomerSampleDataVenia\Setup\Patch\Data;
 
 use Magento\Framework\Setup\Patch\DataPatchInterface;
-use Magento\Framework\Setup\Patch\SchemaPatchInterface;
-use Magento\Framework\Setup\Patch\PatchRevertableInterface;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
 use Magento\CustomerSampleDataVenia\Setup\CustomerInstall;
 use Magento\Framework\Setup\Patch\PatchVersionInterface;

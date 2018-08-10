@@ -232,13 +232,11 @@ class CustomerInstall
                 $currentAddress = $customer->getAddresses();
                 $currentAddress[]=$addresses;
                 $customer->setAddresses($currentAddress);
-                //$this->appState->setAreaCode(\Magento\Framework\App\Area::AREA_FRONTEND);
                 $this->appState->emulateAreaCode(
                     'frontend',
                     [$this->customerRepository, 'save'],
                     [$customer]
                 );
-               //$this->customerRepository->save($customer);
             }
         }
     }
