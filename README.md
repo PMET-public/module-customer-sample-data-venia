@@ -1,3 +1,8 @@
+## Magento_CustomerSampleDataVenia
+
+Sample data for Magento PWA
+
+
 Customer Logins:
 
 Veronica Costello: username - roni_cost@example.com, password - roni_cost3@example.com
